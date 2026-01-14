@@ -2,15 +2,16 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>SIGMAGIS - Histórico</title>
+    <title>SIGMAGIS - Análise Temporal</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin: 0; padding: 0; }
         #map { width: 100%; height: 100vh; background: #ffffff; }
-        .popup-link { 
+        .popup-container { text-align: center; font-family: sans-serif; min-width: 200px; }
+        .btn-link { 
             display: block; padding: 12px; margin-top: 8px;
             background: #2c3e50; color: white !important; text-align: center;
-            text-decoration: none; border-radius: 4px; font-weight: bold; font-family: sans-serif;
+            text-decoration: none; border-radius: 4px; font-weight: bold;
         }
     </style>
 </head>
@@ -24,27 +25,28 @@
 
         if (latlong) {
             const partes = latlong.split(",");
+            // O formato esperado é longitude, latitude
             lon = parseFloat(partes[0]);
             lat = parseFloat(partes[1]);
         }
 
         const map = L.map('map').setView([lat, lon], 16);
 
-        // Satélite estável da Esri (Evita o fundo cinza)
+        // Satélite estável da Esri - Carrega sempre
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 19
+            maxZoom: 19,
+            attribution: 'Esri World Imagery'
         }).addTo(map);
 
-        // Abre automaticamente os botões de análise temporal
-        L.popup()
-            .setLatLng([lat, lon])
-            .setContent(`
-                <div style="text-align:center; min-width:180px;">
-                    <b style="font-family:sans-serif;">SIGMAGIS - ANÁLISE</b><br>
-                    <a href="https://livingatlas.arcgis.com/wayback/#loc=${lon},${lat},17" target="_blank" class="popup-link">LINHA DO TEMPO (ESRI)</a>
-                    <a href="https://earth.google.com/web/search/${lat},${lon}" target="_blank" class="popup-link" style="background:#4285F4">GOOGLE EARTH</a>
+        // Marcador e Popup automático com os links de histórico real
+        L.marker([lat, lon]).addTo(map)
+            .bindPopup(`
+                <div class="popup-container">
+                    <b>SIGMAGIS - HISTÓRICO</b><br>
+                    <a href="https://livingatlas.arcgis.com/wayback/#loc=${lon},${lat},17" target="_blank" class="btn-link">LINHA DO TEMPO (ESRI)</a>
+                    <a href="https://earth.google.com/web/search/${lat},${lon}" target="_blank" class="btn-link" style="background:#4285F4">GOOGLE EARTH</a>
                 </div>
-            `).openOn(map);
+            `).openPopup();
     </script>
 </body>
 </html>
